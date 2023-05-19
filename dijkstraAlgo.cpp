@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector> 
 #include<queue>
+#include<algorithm>
 using namespace std;
 
 
@@ -23,7 +24,6 @@ vector<int> dijsktra(vector<vector<pair<int,int>>> graph,int start, int n){
       vector<int> weight(n+1,100);
       pq.push({0,start});
       weight[start] = 0;
-      weight [start] = 0;
       while(!pq.empty()){
         int wt = pq.top().first;
         int node = pq.top().second;
@@ -41,6 +41,43 @@ vector<int> dijsktra(vector<vector<pair<int,int>>> graph,int start, int n){
      return weight;
 }
 
+
+void printPath(vector<int>path,int end, vector<int> &ans)
+{
+     if(path[end] == end) return ;
+     ans.push_back(end);
+     printPath(path,path[end],ans);
+}
+vector<int> printshortestPath(vector<vector<pair<int,int>>> graph,int start, int n,int end){
+    vector<int> path(n+1,0);
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>>pq;
+    path[start] = start;
+    vector<int> weight(n+1,INT_MAX);
+    weight[start] = 0;
+    pq.push({0,start});
+    while(!pq.empty()){
+        int wt = pq.top().first;
+        int node  = pq.top().second;
+        pq.pop();
+        for(auto it : graph[node]){
+            int adjacentNode = it.first;
+            int adjwt = it.second;
+            if(wt + adjwt < weight[adjacentNode])
+            {
+                weight[adjacentNode] = wt + adjwt; 
+                pq.push({weight[adjacentNode],adjacentNode});
+                path[adjacentNode] = node;
+            }
+        }
+    }
+    vector<int> ans;
+     printPath(path,end ,ans);
+     ans.push_back(start);
+     reverse(ans.begin(),ans.end());
+     return ans;
+}
+ 
+ 
 void print(vector<int> ans){
     for(auto it : ans)
     {
@@ -70,7 +107,7 @@ int main(){
 
 printGraph(graph);  
 
-print(dijsktra(graph,1,n));
+print(printshortestPath(graph,1,n,5));
 
 
    
